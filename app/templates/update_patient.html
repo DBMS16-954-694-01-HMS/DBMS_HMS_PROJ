@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Patient</title>
+</head>
+<body>
+    <h2>Update Patient</h2>
+    <form method="POST">
+        <label>First Name:</label><br>
+        <input type="text" name="first_name" value="{{ patient['first_name'] }}" required><br><br>
+
+        <label>Last Name:</label><br>
+        <input type="text" name="last_name" value="{{ patient['last_name'] }}" required><br><br>
+
+        <label>Phone:</label><br>
+        <input type="text" name="phone" value="{{ patient['phone'] }}" required><br><br>
+
+        <label>Address:</label><br>
+        <input type="text" name="address" value="{{ patient['address'] }}" required><br><br>
+
+        <label>Logs:</label><br>
+        <textarea name="logs" rows="5">{{ patient['logs'] }}</textarea><br><br>
+
+        <button type="submit">Update Patient</button>
+    </form>
+    <br>
+    <a href="{{ url_for('admin.patients') }}">Back to Patients List</a>
+</body>
+</html>

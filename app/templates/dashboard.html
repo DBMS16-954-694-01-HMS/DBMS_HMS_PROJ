@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+<h2>🏥 Hospital Admin Dashboard</h2>
+<a href="{{ url_for('admin.logout') }}">Logout</a>
+<hr>
+<ul>
+  <li>Total Patients: {{ stats.patients }}</li>
+  <li>Total Doctors: {{ stats.doctors }}</li>
+  <li>Total Rooms: {{ stats.rooms }}</li>
+  <li>Total Bills: {{ stats.bills }}</li>
+</ul>
+
+<a href="{{ url_for('admin.patients') }}">Manage Patients</a> |
+<a href="{{ url_for('admin.bills') }}">View Bills</a>
+<a href="{{ url_for('admin.doctors') }}">Doctors</a>
+<a href="{{ url_for('admin.add_doctor') }}">Add Doctor</a>
+
+</body>
+</html>

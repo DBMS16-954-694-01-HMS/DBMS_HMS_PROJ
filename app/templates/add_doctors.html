@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Doctor</title>
+</head>
+<body>
+    <h2>Add New Doctor</h2>
+    <form method="POST">
+        <label>First Name:</label><br>
+        <input type="text" name="first_name" required><br><br>
+
+        <label>Last Name:</label><br>
+        <input type="text" name="last_name" required><br><br>
+
+        <label>Specialization:</label><br>
+        <input type="text" name="specialization" required><br><br>
+
+        <label>Phone:</label><br>
+        <input type="text" name="phone" required><br><br>
+
+        <button type="submit">Add Doctor</button>
+    </form>
+    <br>
+    <a href="{{ url_for('admin.doctors') }}">Back to Doctors List</a>
+</body>
+</html>

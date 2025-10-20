@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><title>Bills</title></head>
+<body>
+<h2>Bills Overview</h2>
+<a href="{{ url_for('admin.dashboard') }}">⬅ Back</a>
+<hr>
+<table border="1">
+<tr><th>ID</th><th>Patient</th><th>Amount</th><th>Paid</th><th>Date</th></tr>
+{% for b in bills %}
+<tr>
+  <td>{{ b.id }}</td>
+  <td>{{ b.patient_name }}</td>
+  <td>${{ b.total_amount }}</td>
+  <td>{{ 'Yes' if b.paid else 'No' }}</td>
+  <td>{{ b.created_at }}</td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>

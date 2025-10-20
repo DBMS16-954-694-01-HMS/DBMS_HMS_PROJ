@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Logs</title>
+</head>
+<body>
+    <h2>Doctor Treatment Logs</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Patient ID</th>
+            <th>Doctor ID</th>
+            <th>Description</th>
+        </tr>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log['id'] }}</td>
+            <td>{{ log['patient_id'] }}</td>
+            <td>{{ log['doctor_id'] }}</td>
+            <td>{{ log['description'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

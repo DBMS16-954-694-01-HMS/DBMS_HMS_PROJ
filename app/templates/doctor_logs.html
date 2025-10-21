@@ -9,15 +9,21 @@
         <tr>
             <th>ID</th>
             <th>Patient ID</th>
-            <th>Doctor ID</th>
+            <th>Patient Name</th>
+            <th>Date</th>
             <th>Description</th>
+            <th>Actions</th>
         </tr>
         {% for log in logs %}
         <tr>
             <td>{{ log['id'] }}</td>
             <td>{{ log['patient_id'] }}</td>
-            <td>{{ log['doctor_id'] }}</td>
-            <td>{{ log['description'] }}</td>
+            <td>{{ log['patient_name'] or '' }}</td>
+            <td>{{ log['start_date'] or log['appointment_datetime'] or '' }}</td>
+            <td>{{ log['description'] or '' }}</td>
+            <td>
+                <a href="{{ url_for('doctor.edit_treatment', tid=log['id']) }}">Edit</a>
+            </td>
         </tr>
         {% endfor %}
     </table>

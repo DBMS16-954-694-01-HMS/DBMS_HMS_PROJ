@@ -1,0 +1,12 @@
+# Ignore virtual environment
+myenv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# SQLite DB
+hospital_management.db
+
+# VSCode
+.vscode/

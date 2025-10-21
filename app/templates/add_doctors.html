@@ -7,16 +7,25 @@
     <h2>Add New Doctor</h2>
     <form method="POST">
         <label>First Name:</label><br>
-        <input type="text" name="first_name" required><br><br>
+        <input type="text" name="f_name" required><br><br>
 
         <label>Last Name:</label><br>
-        <input type="text" name="last_name" required><br><br>
+        <input type="text" name="l_name" required><br><br>
 
         <label>Specialization:</label><br>
-        <input type="text" name="specialization" required><br><br>
+        <input type="text" name="specialization"><br><br>
 
-        <label>Phone:</label><br>
-        <input type="text" name="phone" required><br><br>
+        <label>Contact:</label><br>
+        <input type="text" name="contact"><br><br>
+
+        <label>Department:</label><br>
+        <input type="text" name="department"><br><br>
+
+    <label>Availability:</label><br>
+    <input type="text" name="availability" placeholder="e.g., Mon-Fri 9am-5pm"><br><br>
+
+    <label>Password (for doctor login):</label><br>
+    <input type="password" name="password" required><br><br>
 
         <button type="submit">Add Doctor</button>
     </form>

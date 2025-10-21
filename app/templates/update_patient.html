@@ -18,8 +18,13 @@
         <label>Address:</label><br>
         <input type="text" name="address" value="{{ patient['address'] }}" required><br><br>
 
-        <label>Logs:</label><br>
-        <textarea name="logs" rows="5">{{ patient['logs'] }}</textarea><br><br>
+        <label>Assign Doctor:</label><br>
+        <select name="doctor">
+            <option value="">-- None --</option>
+            {% for d in doctors %}
+            <option value="{{ d['doctor_id'] }}" {% if patient['doctor']|string == d['doctor_id']|string %}selected{% endif %}>Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
+            {% endfor %}
+        </select><br><br>
 
         <button type="submit">Update Patient</button>
     </form>

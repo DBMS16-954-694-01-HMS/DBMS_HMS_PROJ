@@ -8,6 +8,17 @@
   Last Name: <input name="last_name" required><br>
   Phone: <input name="phone"><br>
   Address: <input name="address"><br>
+  Assign Doctor: 
+    {% if doctors and doctors|length > 0 %}
+    <select name="doctor">
+      <option value="">-- None --</option>
+      {% for d in doctors %}
+        <option value="{{ d['doctor_id'] }}">Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
+      {% endfor %}
+    </select><br>
+    {% else %}
+      <p><em>No doctors available. Add a doctor first via Admin → Doctors.</em></p>
+    {% endif %}
   <button type="submit">Add</button>
 </form>
 </body>

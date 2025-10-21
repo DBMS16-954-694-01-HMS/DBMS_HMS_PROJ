@@ -10,9 +10,14 @@ def book_appointment():
         did = request.form['doctor_id']
         date = request.form['date']
         with sqlite3.connect('hospital_management.db') as conn:
-            conn.execute("INSERT INTO appointment (patient_id, doctor_id, date) VALUES (?, ?, ?)", (pid, did, date))
+            conn.execute("INSERT INTO appointment (patient_id, doctor_id, appointment_datetime) VALUES (?, ?, ?)", (pid, did, date))
         return redirect(url_for('patient.view_appointments'))
-    return render_template('patient_book.html')
+    # GET: provide list of doctors and patients for booking
+    with sqlite3.connect('hospital_management.db') as conn:
+        conn.row_factory = sqlite3.Row
+        patients = conn.execute('SELECT id, first_name, last_name FROM patients').fetchall()
+        doctors = conn.execute('SELECT doctor_id, f_name, l_name FROM doctors').fetchall()
+    return render_template('patient_book.html', patients=patients, doctors=doctors)
 
 
 @patient_bp.route('/appointments')

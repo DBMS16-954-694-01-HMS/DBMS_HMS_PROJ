@@ -12,21 +12,29 @@
             <th>First Name</th>
             <th>Last Name</th>
             <th>Specialization</th>
-            <th>Phone</th>
+            <th>Contact</th>
+            <th>Password</th>
+            <th>Department</th>
+            <th>Availability</th>
             <th>Actions</th>
         </tr>
         {% for doc in doctors %}
         <tr>
-            <td>{{ doc['id'] }}</td>
-            <td>{{ doc['first_name'] }}</td>
-            <td>{{ doc['last_name'] }}</td>
+            <td>{{ doc['doctor_id'] }}</td>
+            <td>{{ doc['f_name'] }}</td>
+            <td>{{ doc['l_name'] }}</td>
             <td>{{ doc['specialization'] }}</td>
-            <td>{{ doc['phone'] }}</td>
+            <td>{{ doc['contact'] }}</td>
+            <td>{{ doc['password'] }}</td>
+            <td>{{ doc['department'] }}</td>
+            <td>{{ doc['availability'] }}</td>
             <td>
-                <a href="{{ url_for('admin.delete_doctor', did=doc['id']) }}"
+                <a href="{{ url_for('admin.delete_doctor', did=doc['doctor_id']) }}"
                    onclick="return confirm('Are you sure you want to delete this doctor?');">
                    Delete
                 </a>
+                |
+                <a href="{{ url_for('doctor.doctor_profile', did=doc['doctor_id']) }}">Profile</a>
             </td>
         </tr>
         {% endfor %}

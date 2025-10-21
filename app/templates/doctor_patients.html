@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>My Patients</title></head>
+<body>
+<h2>My Patients</h2>
+<a href="{{ url_for('doctor.view_logs') }}">⬅ Back to Logs</a>
+<hr>
+<table border="1">
+<tr><th>ID</th><th>Name</th><th>Phone</th><th>Actions</th></tr>
+{% for p in patients %}
+<tr>
+  <td>{{ p['id'] }}</td>
+  <td>{{ p['first_name'] }} {{ p['last_name'] }}</td>
+  <td>{{ p['phone'] }}</td>
+  <td><a href="{{ url_for('doctor.view_patient', pid=p['id']) }}">Open</a></td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>

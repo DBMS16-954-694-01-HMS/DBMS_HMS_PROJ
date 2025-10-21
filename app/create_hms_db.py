@@ -9,13 +9,18 @@ def create_hms_db(db_name="hospital_management.db"):
 
     schema = """
     -- -----------------------
-    -- staff table
+    -- doctors table (replaces staff)
     -- -----------------------
-    CREATE TABLE IF NOT EXISTS staff (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        role TEXT NOT NULL CHECK(role IN ('doctor','nurse','pharmacist','phlebotomist','admin','head')),
-        contact TEXT
+    CREATE TABLE IF NOT EXISTS doctors (
+        doctor_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        f_name TEXT NOT NULL,
+        l_name TEXT NOT NULL,
+        specialization TEXT,
+        contact TEXT,
+        department TEXT,
+        availability TEXT,
+        password TEXT,
+        created_at TEXT DEFAULT (datetime('now'))
     );
 
     -- -----------------------
@@ -28,6 +33,8 @@ def create_hms_db(db_name="hospital_management.db"):
         dob DATE,
         phone TEXT,
         address TEXT,
+        doctor INTEGER REFERENCES doctors(doctor_id) ON DELETE SET NULL,
+        department TEXT,
         created_at TEXT DEFAULT (datetime('now'))
     );
 
@@ -66,7 +73,7 @@ def create_hms_db(db_name="hospital_management.db"):
     CREATE TABLE IF NOT EXISTS appointments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-        doctor_id INTEGER NOT NULL REFERENCES staff(id) ON DELETE SET NULL,
+    doctor_id INTEGER NOT NULL REFERENCES doctors(doctor_id) ON DELETE SET NULL,
         appointment_datetime TEXT NOT NULL,
         status TEXT NOT NULL CHECK(status IN ('booked','confirmed','cancelled','completed')) DEFAULT 'booked',
         notes TEXT,
@@ -79,7 +86,7 @@ def create_hms_db(db_name="hospital_management.db"):
     CREATE TABLE IF NOT EXISTS treatments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-        doctor_id INTEGER NOT NULL REFERENCES staff(id) ON DELETE SET NULL,
+    doctor_id INTEGER NOT NULL REFERENCES doctors(doctor_id) ON DELETE SET NULL,
         description TEXT,
         start_date TEXT DEFAULT (datetime('now')),
         end_date TEXT,
@@ -93,9 +100,9 @@ def create_hms_db(db_name="hospital_management.db"):
     -- -----------------------
     CREATE TABLE IF NOT EXISTS prescriptions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-        doctor_id INTEGER NOT NULL REFERENCES staff(id) ON DELETE SET NULL,
-        pharmacist_id INTEGER REFERENCES staff(id) ON DELETE SET NULL,
+    patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    doctor_id INTEGER NOT NULL REFERENCES doctors(doctor_id) ON DELETE SET NULL,
+    pharmacist_id INTEGER,
         created_at TEXT DEFAULT (datetime('now')),
         notes TEXT
     );
@@ -116,8 +123,8 @@ def create_hms_db(db_name="hospital_management.db"):
     -- -----------------------
     CREATE TABLE IF NOT EXISTS med_dispense (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        prescription_item_id INTEGER NOT NULL REFERENCES prescription_items(id) ON DELETE CASCADE,
-        pharmacist_id INTEGER NOT NULL REFERENCES staff(id) ON DELETE SET NULL,
+    prescription_item_id INTEGER NOT NULL REFERENCES prescription_items(id) ON DELETE CASCADE,
+    pharmacist_id INTEGER,
         dispensed_at TEXT DEFAULT (datetime('now')),
         quantity INTEGER NOT NULL,
         notes TEXT
@@ -128,9 +135,9 @@ def create_hms_db(db_name="hospital_management.db"):
     -- -----------------------
     CREATE TABLE IF NOT EXISTS lab_tests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-        doctor_id INTEGER NOT NULL REFERENCES staff(id) ON DELETE SET NULL,
-        phlebotomist_id INTEGER REFERENCES staff(id) ON DELETE SET NULL,
+    patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    doctor_id INTEGER NOT NULL REFERENCES doctors(doctor_id) ON DELETE SET NULL,
+    phlebotomist_id INTEGER,
         test_name TEXT NOT NULL,
         requested_at TEXT DEFAULT (datetime('now')),
         performed_at TEXT,
@@ -236,6 +243,26 @@ def create_hms_db(db_name="hospital_management.db"):
     """
 
     c.executescript(schema)
+    # --- Migration: ensure 'password' column exists on doctors for older DBs ---
+    try:
+        cols = [r[1] for r in c.execute("PRAGMA table_info(doctors);").fetchall()]
+        if 'password' not in cols:
+            c.execute("ALTER TABLE doctors ADD COLUMN password TEXT;")
+            print("Added 'password' column to doctors table (migration).")
+    except Exception:
+        # If doctors table doesn't exist yet or other issue, ignore here — schema creation above will handle it
+        pass
+    # --- Migration: ensure 'doctor' and 'department' columns exist on patients for older DBs ---
+    try:
+        pcols = [r[1] for r in c.execute("PRAGMA table_info(patients);").fetchall()]
+        if 'doctor' not in pcols:
+            c.execute("ALTER TABLE patients ADD COLUMN doctor INTEGER;")
+            print("Added 'doctor' column to patients table (migration).")
+        if 'department' not in pcols:
+            c.execute("ALTER TABLE patients ADD COLUMN department TEXT;")
+            print("Added 'department' column to patients table (migration).")
+    except Exception:
+        pass
     conn.commit()
     conn.close()
     print(f"✅ Database '{db_name}' created successfully with all tables and triggers.")

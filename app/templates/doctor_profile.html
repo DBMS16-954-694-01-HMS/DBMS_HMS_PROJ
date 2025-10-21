@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Profile</title>
+</head>
+<body>
+    <h2>Dr. {{ doctor['f_name'] }} {{ doctor['l_name'] }}</h2>
+    <p>Specialization: {{ doctor['specialization'] }}</p>
+    <p>Contact: {{ doctor['contact'] }}</p>
+    <p>Department: {{ doctor['department'] }}</p>
+    <p>Availability: {{ doctor['availability'] }}</p>
+
+    <h3>Treatments</h3>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Patient ID</th>
+            <th>Description</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+        {% for t in treatments %}
+        <tr>
+            <td>{{ t['id'] }}</td>
+            <td>{{ t['patient_id'] }}</td>
+            <td>{{ t['description'] }}</td>
+            <td>{{ t['start_date'] }}</td>
+            <td>{{ t['end_date'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <a href="{{ url_for('doctor.list_doctors') }}">Back to Doctors</a>
+</body>
+</html>

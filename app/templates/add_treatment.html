@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Treatment</title>
+</head>
+<body>
+    <h2>Add Treatment</h2>
+    <form method="POST">
+        <label>Patient:</label><br>
+        <select name="patient_id" required>
+            {% for p in patients %}
+            <option value="{{ p['id'] }}">{{ p['first_name'] }} {{ p['last_name'] }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label>Doctor:</label><br>
+        <select name="doctor_id" required>
+            {% for d in doctors %}
+            <option value="{{ d['doctor_id'] }}">Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label>Details:</label><br>
+        <textarea name="details" rows="4" cols="50"></textarea><br><br>
+
+        <button type="submit">Add Treatment</button>
+    </form>
+    <br>
+    <a href="{{ url_for('doctor.view_logs') }}">Back to Logs</a>
+</body>
+</html>

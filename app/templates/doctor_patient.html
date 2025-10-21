@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head><title>Patient</title></head>
+<body>
+<h2>Patient: {{ patient['first_name'] }} {{ patient['last_name'] }} (ID: {{ patient['id'] }})</h2>
+<a href="{{ url_for('doctor.my_patients') }}">⬅ Back to My Patients</a>
+<hr>
+<h3>Add Symptom / Treatment Note</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="add_symptom">
+  <textarea name="description" rows="4" cols="60"></textarea><br>
+  <button type="submit">Add</button>
+</form>
+
+<h3>Existing Treatments</h3>
+<table border="1">
+<tr><th>ID</th><th>Description</th><th>Date</th><th>Actions</th></tr>
+{% for t in treatments %}
+<tr>
+  <td>{{ t['id'] }}</td>
+  <td>{{ t['description'] }}</td>
+  <td>{{ t['start_date'] or t['end_date'] or '' }}</td>
+  <td><a href="{{ url_for('doctor.edit_treatment', tid=t['id']) }}">Edit</a></td>
+</tr>
+{% endfor %}
+</table>
+
+<h3>Create Prescription</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="prescribe">
+  Medication name: <input name="medication_name" required><br>
+  Dosage: <input name="dosage"><br>
+  Quantity: <input name="quantity" value="1"><br>
+  Unit price: <input name="unit_price" value="0"><br>
+  Notes: <input name="notes"><br>
+  <button type="submit">Prescribe</button>
+</form>
+
+<h3>Existing Prescriptions</h3>
+<table border="1">
+<tr><th>ID</th><th>Created At</th><th>Notes</th></tr>
+{% for p in prescriptions %}
+<tr>
+  <td>{{ p['id'] }}</td>
+  <td>{{ p['created_at'] }}</td>
+  <td>{{ p['notes'] }}</td>
+</tr>
+{% endfor %}
+</table>
+
+</body>
+</html>

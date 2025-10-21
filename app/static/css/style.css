@@ -1,0 +1,31 @@
+/* Login background and overlay */
+.login-bg {
+  background: url('../icons/bg_login.avif') no-repeat center center fixed;
+  background-size: cover;
+  position: relative;
+}
+.login-bg::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.35);
+  z-index: 0;
+  pointer-events: none;
+}
+.form-card { position: relative; z-index: 1; }
+/* Basic styling for HMS project */
+body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+.container { max-width: 980px; }
+.form-card { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+.header-icon { width: 64px; height: 64px; object-fit: contain; }
+.table thead th { background: #f8f9fa; }
+.footer { margin-top: 3rem; }
+
+/* Toast/snackbar tweaks */
+.toast-container { z-index: 1080; }
+.toast { border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+.toast .toast-body { font-weight: 500; }
+
+@media (max-width: 576px) {
+  .container { padding-left: 1rem; padding-right: 1rem; }
+}

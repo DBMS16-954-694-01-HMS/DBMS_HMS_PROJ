@@ -1,14 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head><title>Doctor Login</title></head>
-<body>
-<h2>Doctor Login</h2>
-<form method="POST">
-  <label>Username (FirstNameLastName):</label><br>
-  <input name="username" placeholder="e.g., JohnDoe" required><br><br>
-  <label>Password:</label><br>
-  <input name="password" type="password" required><br><br>
-  <button type="submit">Login</button>
-</form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Doctor Login - HMS{% endblock %}
+
+{% block content %}
+{% set login_bg = true %}
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+  <div class="col-md-6">
+    <div class="form-card text-center form-card-bg">
+      <img src="{{ url_for('static', filename='icons/icon_doc.png') }}" alt="Doctor" class="header-icon mb-3">
+      <h2 class="mb-3">Doctor Login</h2>
+      <form method="POST">
+        <div class="mb-3 text-start">
+          <label class="form-label">Username (FirstNameLastName)</label>
+          <input class="form-control" name="username" placeholder="e.g., JohnDoe" required>
+        </div>
+        <div class="mb-3 text-start">
+          <label class="form-label">Password</label>
+          <input class="form-control" name="password" type="password" required>
+        </div>
+        <button class="btn btn-primary w-100" type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

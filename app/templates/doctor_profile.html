@@ -1,36 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Doctor Profile</title>
-</head>
-<body>
-    <h2>Dr. {{ doctor['f_name'] }} {{ doctor['l_name'] }}</h2>
-    <p>Specialization: {{ doctor['specialization'] }}</p>
-    <p>Contact: {{ doctor['contact'] }}</p>
-    <p>Department: {{ doctor['department'] }}</p>
-    <p>Availability: {{ doctor['availability'] }}</p>
+{% extends 'base.html' %}
+{% block title %}Doctor Profile - HMS{% endblock %}
 
-    <h3>Treatments</h3>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Patient ID</th>
-            <th>Description</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-        </tr>
-        {% for t in treatments %}
-        <tr>
-            <td>{{ t['id'] }}</td>
-            <td>{{ t['patient_id'] }}</td>
-            <td>{{ t['description'] }}</td>
-            <td>{{ t['start_date'] }}</td>
-            <td>{{ t['end_date'] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+{% block content %}
+<div class="card p-4">
+    <div class="d-flex align-items-center mb-3">
+        <img src="{{ url_for('static', filename='icons/doctor.png') }}" alt="Doctor" class="header-icon me-3">
+        <div>
+            <h3 class="mb-0">Dr. {{ doctor['f_name'] }} {{ doctor['l_name'] }}</h3>
+            <div class="text-muted">{{ doctor['specialization'] }} — {{ doctor['department'] }}</div>
+        </div>
+    </div>
 
-    <br>
-    <a href="{{ url_for('doctor.list_doctors') }}">Back to Doctors</a>
-</body>
-</html>
+    <div class="row mb-4">
+        <div class="col-md-4"><strong>Contact</strong><div>{{ doctor['contact'] }}</div></div>
+        <div class="col-md-4"><strong>Availability</strong><div>{{ doctor['availability'] }}</div></div>
+    </div>
+
+    <h5>Treatments</h5>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient ID</th>
+                    <th>Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in treatments %}
+                <tr>
+                    <td>{{ t['id'] }}</td>
+                    <td>{{ t['patient_id'] }}</td>
+                    <td>{{ t['description'] }}</td>
+                    <td>{{ t['start_date'] }}</td>
+                    <td>{{ t['end_date'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a class="btn btn-outline-secondary mt-3" href="{{ url_for('doctor.list_doctors') }}">Back to Doctors</a>
+</div>
+{% endblock %}

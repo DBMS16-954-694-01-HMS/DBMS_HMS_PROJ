@@ -1,23 +1,49 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard</title>
-</head>
-<body>
-<h2>🏥 Hospital Admin Dashboard</h2>
-<a href="{{ url_for('admin.logout') }}">Logout</a>
-<hr>
-<ul>
-  <li>Total Patients: {{ stats.patients }}</li>
-  <li>Total Doctors: {{ stats.doctors }}</li>
-  <li>Total Rooms: {{ stats.rooms }}</li>
-  <li>Total Bills: {{ stats.bills }}</li>
-</ul>
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - HMS{% endblock %}
 
-<a href="{{ url_for('admin.patients') }}">Manage Patients</a> |
-<a href="{{ url_for('admin.bills') }}">View Bills</a>
-<a href="{{ url_for('admin.doctors') }}">Doctors</a>
-<a href="{{ url_for('admin.add_doctor') }}">Add Doctor</a>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="m-0">🏥 Hospital Admin Dashboard</h2>
+  <div>
+    <a class="btn btn-outline-secondary me-2" href="{{ url_for('admin.patients') }}">Manage Patients</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin.doctors') }}">Manage Doctors</a>
+  </div>
+</div>
 
-</body>
-</html>
+<div class="row g-3">
+  <div class="col-md-3">
+    <a href="{{ url_for('admin.patients') }}" class="text-decoration-none">
+      <div class="card p-3 text-center h-100 shadow-sm card-hover">
+        <h5>Total Patients</h5>
+        <h3>{{ stats.patients }}</h3>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a href="{{ url_for('admin.doctors') }}" class="text-decoration-none">
+      <div class="card p-3 text-center h-100 shadow-sm card-hover">
+        <h5>Total Doctors</h5>
+        <h3>{{ stats.doctors }}</h3>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 text-center h-100">
+      <h5>Total Rooms</h5>
+      <h3>{{ stats.rooms }}</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 text-center h-100">
+      <h5>Total Bills</h5>
+      <h3>{{ stats.bills }}</h3>
+    </div>
+  </div>
+</div>
+
+
+<div class="mt-4">
+  <a class="btn btn-secondary" href="{{ url_for('admin.bills') }}">View Bills</a>
+</div>
+
+{% endblock %}

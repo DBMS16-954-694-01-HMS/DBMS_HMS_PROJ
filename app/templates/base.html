@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Hospital Management{% endblock %}</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-light">
+    {# Hide navbar on login pages #}
+    {% set is_login_page = request.endpoint in ['admin.login', 'doctor.login'] %}
+    {% if not is_login_page %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">HMS</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav ms-auto">
+            {% if session.get('admin') %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.logout') }}">Logout</a></li>
+            {% elif session.get('doctor_logged_in') %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('doctor.view_logs') }}">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('doctor.logout') }}">Logout</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+    {% endif %}
+
+    <main class="container py-5">
+
+      <!-- Toast / Snackbar container for flashed messages -->
+      <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, msg in messages %}
+            {# map flash category to Bootstrap background classes #}
+            {% set bs_class = 'bg-primary text-white' %}
+            {% if category == 'success' %}{% set bs_class = 'bg-success text-white' %}
+            {% elif category == 'danger' %}{% set bs_class = 'bg-danger text-white' %}
+            {% elif category == 'info' %}{% set bs_class = 'bg-info text-dark' %}
+            {% elif category == 'warning' %}{% set bs_class = 'bg-warning text-dark' %}{% endif %}
+
+            <div class="toast align-items-center {{ bs_class }} mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+              <div class="d-flex">
+                <div class="toast-body">{{ msg }}</div>
+                <button type="button" class="btn-close {% if 'text-white' in bs_class %}btn-close-white{% endif %} me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+            </div>
+          {% endfor %}
+        {% endwith %}
+      </div>
+
+      {% block content %}{% endblock %}
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+      toastElList.forEach(function (toastEl) {
+        try {
+          var t = new bootstrap.Toast(toastEl);
+          t.show();
+        } catch (e) {
+          console.error('Toast init failed', e);
+        }
+      });
+    });
+    </script>
+</body>
+</html>

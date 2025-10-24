@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head><title>Patient Home</title></head>
+<body>
+  <h2>Welcome, {{ name }}!</h2>
+  <a href="{{ url_for('patient.book_appointment') }}">Book an Appointment</a> |
+  <a href="{{ url_for('patient.view_appointments') }}">My Appointments</a> |
+  <a href="{{ url_for('patient.logout') }}">Logout</a>
+</body>
+</html>

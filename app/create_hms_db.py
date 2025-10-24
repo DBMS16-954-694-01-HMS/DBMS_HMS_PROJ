@@ -6,6 +6,12 @@ def create_hms_db(db_name="hospital_management.db"):
 
     # Enable foreign keys
     c.execute("PRAGMA foreign_keys = ON;")
+    # Use WAL journal mode to reduce locking contention (allows concurrent reads/writes)
+    try:
+        c.execute("PRAGMA journal_mode = WAL;")
+        c.execute("PRAGMA synchronous = NORMAL;")
+    except Exception:
+        pass
 
     schema = """
     -- -----------------------
@@ -73,7 +79,7 @@ def create_hms_db(db_name="hospital_management.db"):
     CREATE TABLE IF NOT EXISTS appointments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    doctor_id INTEGER NOT NULL REFERENCES doctors(doctor_id) ON DELETE SET NULL,
+    doctor_id INTEGER REFERENCES doctors(doctor_id) ON DELETE SET NULL,
         appointment_datetime TEXT NOT NULL,
         status TEXT NOT NULL CHECK(status IN ('booked','confirmed','cancelled','completed')) DEFAULT 'booked',
         notes TEXT,
@@ -86,7 +92,7 @@ def create_hms_db(db_name="hospital_management.db"):
     CREATE TABLE IF NOT EXISTS treatments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    doctor_id INTEGER NOT NULL REFERENCES doctors(doctor_id) ON DELETE SET NULL,
+    doctor_id INTEGER REFERENCES doctors(doctor_id) ON DELETE SET NULL,
         description TEXT,
         start_date TEXT DEFAULT (datetime('now')),
         end_date TEXT,
@@ -101,7 +107,7 @@ def create_hms_db(db_name="hospital_management.db"):
     CREATE TABLE IF NOT EXISTS prescriptions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
     patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    doctor_id INTEGER NOT NULL REFERENCES doctors(doctor_id) ON DELETE SET NULL,
+    doctor_id INTEGER REFERENCES doctors(doctor_id) ON DELETE SET NULL,
     pharmacist_id INTEGER,
         created_at TEXT DEFAULT (datetime('now')),
         notes TEXT
@@ -136,7 +142,7 @@ def create_hms_db(db_name="hospital_management.db"):
     CREATE TABLE IF NOT EXISTS lab_tests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
     patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    doctor_id INTEGER NOT NULL REFERENCES doctors(doctor_id) ON DELETE SET NULL,
+    doctor_id INTEGER REFERENCES doctors(doctor_id) ON DELETE SET NULL,
     phlebotomist_id INTEGER,
         test_name TEXT NOT NULL,
         requested_at TEXT DEFAULT (datetime('now')),
@@ -262,6 +268,55 @@ def create_hms_db(db_name="hospital_management.db"):
             c.execute("ALTER TABLE patients ADD COLUMN department TEXT;")
             print("Added 'department' column to patients table (migration).")
     except Exception:
+        pass
+    # --- Migration: make appointments.doctor_id nullable if older DB has NOT NULL constraint ---
+    try:
+        ap_cols = c.execute("PRAGMA table_info(appointments);").fetchall()
+        # PRAGMA table_info returns rows: (cid, name, type, notnull, dflt_value, pk)
+        doctor_col = None
+        for col in ap_cols:
+            if col[1] == 'doctor_id':
+                doctor_col = col
+                break
+        if doctor_col is not None and doctor_col[3] == 1:
+            print("Found NOT NULL constraint on appointments.doctor_id — migrating to allow NULLs...")
+            # Disable foreign keys temporarily for table rebuild
+            c.execute('PRAGMA foreign_keys = OFF;')
+            # Rename old table
+            c.execute('ALTER TABLE appointments RENAME TO appointments_old;')
+            # Create new appointments table with doctor_id nullable
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS appointments (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+                    doctor_id INTEGER REFERENCES doctors(doctor_id) ON DELETE SET NULL,
+                    appointment_datetime TEXT NOT NULL,
+                    status TEXT NOT NULL CHECK(status IN ('booked','confirmed','cancelled','completed')) DEFAULT 'booked',
+                    notes TEXT,
+                    fee REAL DEFAULT 0
+                );
+            ''')
+            # Copy data across (keep existing doctor_id values)
+            c.execute('''
+                INSERT INTO appointments (id, patient_id, doctor_id, appointment_datetime, status, notes, fee)
+                SELECT id, patient_id, doctor_id, appointment_datetime, status, notes, fee FROM appointments_old;
+            ''')
+            # Drop old table
+            c.execute('DROP TABLE appointments_old;')
+            # Re-enable foreign keys
+            c.execute('PRAGMA foreign_keys = ON;')
+            print('Migrated appointments table to allow NULL doctor_id.')
+    except Exception as ex:
+        # If appointments table doesn't exist yet or migration fails, print and continue
+        print('appointments migration skipped or failed:', ex)
+    # --- Migration: ensure 'actions' column exists on appointments for older DBs ---
+    try:
+        acols = [r[1] for r in c.execute("PRAGMA table_info(appointments);").fetchall()]
+        if 'actions' not in acols:
+            c.execute("ALTER TABLE appointments ADD COLUMN actions TEXT;")
+            print("Added 'actions' column to appointments table (migration).")
+    except Exception:
+        # ignore if appointments table doesn't exist yet
         pass
     conn.commit()
     conn.close()

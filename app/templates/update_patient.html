@@ -18,17 +18,68 @@
         <label>Address:</label><br>
         <input type="text" name="address" value="{{ patient['address'] }}" required><br><br>
 
-        <label>Assign Doctor:</label><br>
-        <select name="doctor">
-            <option value="">-- None --</option>
-            {% for d in doctors %}
-            <option value="{{ d['doctor_id'] }}" {% if patient['doctor']|string == d['doctor_id']|string %}selected{% endif %}>Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
-            {% endfor %}
-        </select><br><br>
+        <!-- Patient-level doctor assignment removed. Use per-appointment doctor select below. -->
 
         <button type="submit">Update Patient</button>
     </form>
     <br>
-    <a href="{{ url_for('admin.patients') }}">Back to Patients List</a>
+            <h3>Appointments for this patient</h3>
+            {% if appointments %}
+                <table border="1" cellpadding="6">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                            <th>Update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in appointments %}
+                            <tr>
+                                <td>{{ a['id'] }}</td>
+                                <td>{{ a['appointment_datetime'].split(' ')[0] if a['appointment_datetime'] else '' }}</td>
+                                <td>{{ a['appointment_datetime'].split(' ')[1] if a['appointment_datetime'] and ' ' in a['appointment_datetime'] else '' }}</td>
+                                <td>{{ a['status'] }}</td>
+                                <td>
+                                    <form method="post" action="{{ url_for('admin.update_appointment', aid=a['id']) }}">
+                                        <input type="hidden" name="patient_id" value="{{ patient['id'] }}">
+                    <input type="date" name="date" value="{{ a['appointment_datetime'].split(' ')[0] if a['appointment_datetime'] else '' }}">
+                    <input type="time" name="time" value="{{ a['appointment_datetime'].split(' ')[1] if a['appointment_datetime'] and ' ' in a['appointment_datetime'] else '' }}">
+                                </td>
+                <td>
+                    <select name="status">
+                                            <option value="booked" {% if a['status']=='booked' %}selected{% endif %}>Pending</option>
+                                            <option value="confirmed" {% if a['status']=='confirmed' %}selected{% endif %}>Confirmed</option>
+                                            <option value="cancelled" {% if a['status']=='cancelled' %}selected{% endif %}>Cancelled</option>
+                                            <option value="completed" {% if a['status']=='completed' %}selected{% endif %}>Completed</option>
+                                        </select>
+                                </td>
+                <td>
+                    <select name="doctor">
+                        <option value="">-- None --</option>
+                        {% for d in doctors %}
+                        <option value="{{ d['doctor_id'] }}" {% if a['doctor_id']|string == d['doctor_id']|string %}selected{% endif %}>Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <input type="text" name="actions" class="form-control" placeholder="Admin actions/notes" value="{{ a['actions'] or '' }}">
+                </td>
+                                <td>
+                                        <button type="submit">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No appointments for this patient.</p>
+            {% endif %}
+
+            <br>
+            <a href="{{ url_for('admin.patients') }}">Back to Patients List</a>
 </body>
 </html>

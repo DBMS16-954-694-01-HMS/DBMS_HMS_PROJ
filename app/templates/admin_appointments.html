@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Pending Appointments (Booked)</h2>
+{% if rows %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Patient</th>
+        <th>Status</th>
+        <th>Actions</th>
+      <th>Requested At</th>
+      <th>Requested Time</th>
+      <th>Assigned Doctor</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td>{{ r['id'] }}</td>
+      <td>{{ r['patient_name'] }}</td>
+      <td>{{ r['status'] }}</td>
+      <td>{{ r['actions'] or '' }}</td>
+      <td>{{ r['appointment_datetime'].split(' ')[0] if r['appointment_datetime'] else '' }}</td>
+      <td>{{ r['appointment_datetime'].split(' ')[1] if r['appointment_datetime'] and ' ' in r['appointment_datetime'] else '' }}</td>
+      <td>{{ r['doctor_name'] or 'Not assigned' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin.confirm_appointment', aid=r['id']) }}">
+          <div style="margin-bottom:6px;">
+            <select name="doctor" class="form-control" required>
+              <option value="">-- select doctor --</option>
+              {% for d in doctors %}
+                <option value="{{ d['doctor_id'] }}" {% if d['doctor_id'] == r['doctor_id'] %}selected{% endif %}>Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div style="margin-bottom:6px;">
+            <label><input type="checkbox" id="edit_dt_{{ r['id'] }}" name="edit_dt" value="1"> Edit date/time</label>
+          </div>
+          <div id="dt_fields_{{ r['id'] }}" style="display:none; margin-bottom:6px;">
+            <input type="date" name="date" value="{{ r['appointment_datetime'].split(' ')[0] if r['appointment_datetime'] else '' }}">
+            <input type="time" name="time" value="{{ r['appointment_datetime'].split(' ')[1] if r['appointment_datetime'] and ' ' in r['appointment_datetime'] else '' }}">
+          </div>
+          <div style="margin-bottom:6px;">
+            <input type="text" name="actions" class="form-control" placeholder="Admin actions/notes" value="{{ r['actions'] or '' }}">
+          </div>
+          <button type="submit" class="btn btn-sm btn-primary">Confirm & Assign</button>
+        </form>
+        <script>
+          (function(){
+            const cb = document.getElementById('edit_dt_{{ r['id'] }}');
+            const fields = document.getElementById('dt_fields_{{ r['id'] }}');
+            if(cb){
+              cb.addEventListener('change', function(){
+                fields.style.display = this.checked ? 'block' : 'none';
+              });
+            }
+          })();
+        </script>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No pending appointments.</p>
+{% endif %}
+
+{% endblock %}

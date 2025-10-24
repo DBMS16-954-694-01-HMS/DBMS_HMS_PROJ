@@ -1,41 +1,32 @@
 {% extends 'base.html' %}
-{% block title %}Patients List - HMS{% endblock %}
+{% block title %}Book Appointment - HMS{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h2 class="m-0">Patients List</h2>
-  <a class="btn btn-primary" href="{{ url_for('admin.add_patient') }}">Add New Patient</a>
-</div>
-<div class="table-responsive">
-  <table class="table table-striped align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Address</th>
-        <th>Doctor</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in patients %}
-      <tr>
-        <td>{{ p.id }}</td>
-        <td>{{ p.first_name }} {{ p.last_name }}</td>
-        <td>{{ p.phone }}</td>
-        <td>{{ p.address }}</td>
-        <td>{% if p['doctor_name'] %}Dr. {{ p['doctor_name'] }}{% else %}-{% endif %}</td>
-        <td>
-          <a class="btn btn-outline-primary btn-sm me-1" href="{{ url_for('admin.update_patient', pid=p.id) }}">Edit</a>
-          <a class="btn btn-outline-danger btn-sm" href="{{ url_for('admin.delete_patient', pid=p.id) }}" onclick="return confirm('Are you sure you want to delete this patient?');">Delete</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-<div class="mt-4">
-  <a class="btn btn-secondary" href="{{ url_for('admin.dashboard') }}">Back to Dashboard</a>
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <h2>Book Appointment</h2>
+    <form method="POST" action="{{ url_for('patient.book_appointment') }}">
+      <p>Appointments will be assigned to a doctor by the admin. Please pick a date/time and provide notes.</p>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Date</label>
+          <input type="date" name="date" class="form-control" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Time</label>
+          <input type="time" name="time" class="form-control">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Notes / Reason</label>
+        <textarea name="notes" class="form-control" rows="4"></textarea>
+      </div>
+
+      <button class="btn btn-primary" type="submit">Book Appointment</button>
+      <a class="btn btn-secondary ms-2" href="{{ url_for('patient.home') }}">Cancel</a>
+    </form>
+  </div>
 </div>
 {% endblock %}
 

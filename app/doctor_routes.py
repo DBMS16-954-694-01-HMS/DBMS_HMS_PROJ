@@ -6,8 +6,13 @@ doctor_bp = Blueprint('doctor', __name__)
 DATABASE = 'hospital_management.db'
 
 def get_conn():
-    conn = sqlite3.connect(DATABASE)
+    # increase timeout and allow connections from different threads (dev server may use threads)
+    conn = sqlite3.connect(DATABASE, timeout=30, check_same_thread=False)
     conn.row_factory = sqlite3.Row
+    try:
+        conn.execute('PRAGMA foreign_keys = ON;')
+    except Exception:
+        pass
     return conn
 
 
@@ -68,7 +73,8 @@ def login():
             session['doctor_id'] = row['doctor_id']
             session['doctor_name'] = f"{row['f_name']} {row['l_name']}"
             conn.close()
-            return redirect(url_for('doctor.view_logs'))
+            # after login, go to Manage Patients so the doctor can pick a patient
+            return redirect(url_for('doctor.my_patients'))
         else:
             flash('Invalid doctor credentials')
     conn.close()
@@ -142,6 +148,86 @@ def my_patients():
     patients = conn.execute('SELECT id, first_name, last_name, phone FROM patients WHERE doctor = ?', (did,)).fetchall()
     conn.close()
     return render_template('doctor_patients.html', patients=patients)
+
+
+@doctor_bp.route('/dashboard')
+def dashboard():
+    """Doctor dashboard: show today's schedule (appointments for the day)."""
+    from flask import session, flash
+    if not session.get('doctor_logged_in'):
+        flash('Please login as doctor')
+        return redirect(url_for('doctor.login'))
+    did = session.get('doctor_id')
+    conn = get_conn()
+    # select appointments for today for this doctor
+    rows = conn.execute('''
+        SELECT a.*, p.first_name || ' ' || p.last_name AS patient_name
+        FROM appointments a
+        LEFT JOIN patients p ON p.id = a.patient_id
+        WHERE a.doctor_id = ? AND date(a.appointment_datetime) = date('now') AND a.status IN ('booked','confirmed')
+        ORDER BY a.appointment_datetime ASC
+    ''', (did,)).fetchall()
+    conn.close()
+    return render_template('doctor_dashboard.html', rows=rows)
+
+
+@doctor_bp.route('/appointments')
+def view_appointments_doctor():
+    """Show appointments assigned to the logged-in doctor that are confirmed."""
+    from flask import session, redirect, flash
+    if not session.get('doctor_logged_in'):
+        flash('Please login as doctor')
+        return redirect(url_for('doctor.login'))
+    did = session.get('doctor_id')
+    conn = get_conn()
+    rows = conn.execute('''
+        SELECT a.*, p.first_name || ' ' || p.last_name AS patient_name
+        FROM appointments a
+        LEFT JOIN patients p ON p.id = a.patient_id
+        WHERE a.doctor_id = ? AND a.status IN ('booked','confirmed')
+        ORDER BY a.appointment_datetime ASC
+    ''', (did,)).fetchall()
+    conn.close()
+    return render_template('doctor_appointments.html', rows=rows)
+
+
+@doctor_bp.route('/appointment/<int:aid>', methods=['GET', 'POST'])
+def open_appointment(aid):
+    """Open a single appointment so the assigned doctor can add treatment notes."""
+    from flask import session, flash
+    if not session.get('doctor_logged_in'):
+        flash('Please login as doctor')
+        return redirect(url_for('doctor.login'))
+    did = session.get('doctor_id')
+    conn = get_conn()
+    appt = conn.execute('''
+        SELECT a.*, p.first_name || ' ' || p.last_name AS patient_name, p.id AS patient_id
+        FROM appointments a
+        JOIN patients p ON p.id = a.patient_id
+        WHERE a.id = ?
+    ''', (aid,)).fetchone()
+    if not appt:
+        conn.close()
+        flash('Appointment not found')
+        return redirect(url_for('doctor.view_appointments_doctor'))
+
+    # ensure this appointment is assigned to this doctor
+    if appt['doctor_id'] is None or appt['doctor_id'] != did:
+        conn.close()
+        flash('Not authorized to view this appointment')
+        return redirect(url_for('doctor.view_appointments_doctor'))
+
+    # handle adding a treatment note
+    if request.method == 'POST':
+        details = request.form.get('details') or ''
+        conn.execute('INSERT INTO treatments (patient_id, doctor_id, description, start_date) VALUES (?, ?, ?, datetime("now"))', (appt['patient_id'], did, details))
+        conn.commit()
+        flash('Treatment note added')
+
+    # reload treatments for the patient
+    treatments = conn.execute('SELECT * FROM treatments WHERE patient_id = ? ORDER BY start_date DESC', (appt['patient_id'],)).fetchall()
+    conn.close()
+    return render_template('doctor_appointment.html', appointment=appt, treatments=treatments)
 
 
 @doctor_bp.route('/patient/<int:pid>', methods=['GET', 'POST'])

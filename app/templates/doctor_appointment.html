@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <h2>Appointment #{{ appointment['id'] }} — {{ appointment['patient_name'] }}</h2>
+    <p><strong>Date/Time:</strong> {{ appointment['appointment_datetime'] or '-' }}</p>
+    <p><strong>Status:</strong> {{ appointment['status'] }}</p>
+    <p><strong>Notes:</strong> {{ appointment['notes'] or '' }}</p>
+
+    <h4>Add Treatment Note</h4>
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">Details</label>
+        <textarea name="details" class="form-control" rows="4"></textarea>
+      </div>
+      <button class="btn btn-primary" type="submit">Add Note</button>
+      <a class="btn btn-secondary ms-2" href="{{ url_for('doctor.view_appointments_doctor') }}">Back</a>
+    </form>
+
+    <hr>
+    <h4>Previous Treatment Notes</h4>
+    {% if treatments %}
+      <ul class="list-group">
+        {% for t in treatments %}
+          <li class="list-group-item">
+            <strong>{{ t['start_date'] }}</strong>: {{ t['description'] or '' }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No treatment notes yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

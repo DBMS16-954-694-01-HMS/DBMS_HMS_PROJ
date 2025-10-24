@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>My Confirmed Appointments</h2>
+{% if rows %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Patient</th>
+      <th>Date & Time</th>
+      <th>Notes</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td><a href="{{ url_for('doctor.open_appointment', aid=r['id']) }}">{{ r['id'] }}</a></td>
+      <td>{{ r['patient_name'] }}</td>
+      <td>{{ r['appointment_datetime'] }}</td>
+      <td>{{ r['notes'] or '' }}</td>
+      <td>{{ r['status'] }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No confirmed appointments yet.</p>
+{% endif %}
+
+{% endblock %}

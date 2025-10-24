@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Patient Login</title></head>
+<body>
+  <h2>Patient Portal Login</h2>
+  <form method="POST">
+    Patient ID: <input type="text" name="patient_id" required><br><br>
+    <button type="submit">Login</button>
+  </form>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <p style="color:red;">{{ msg }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</body>
+</html>

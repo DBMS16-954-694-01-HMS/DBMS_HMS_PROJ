@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="bg-light">
-    {# Hide navbar on login pages #}
-    {% set is_login_page = request.endpoint in ['admin.login', 'doctor.login'] %}
-    {% if not is_login_page %}
+  {# Hide navbar on login pages #}
+  {% set is_login_page = request.endpoint in ['admin.login', 'doctor.login', 'patient.login'] %}
+  {% if not is_login_page %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">HMS</a>
@@ -33,30 +33,31 @@
     </nav>
     {% endif %}
 
-    <main class="container py-5">
-
-      <!-- Toast / Snackbar container for flashed messages -->
-      <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% for category, msg in messages %}
-            {# map flash category to Bootstrap background classes #}
-            {% set bs_class = 'bg-primary text-white' %}
-            {% if category == 'success' %}{% set bs_class = 'bg-success text-white' %}
-            {% elif category == 'danger' %}{% set bs_class = 'bg-danger text-white' %}
-            {% elif category == 'info' %}{% set bs_class = 'bg-info text-dark' %}
-            {% elif category == 'warning' %}{% set bs_class = 'bg-warning text-dark' %}{% endif %}
-
-            <div class="toast align-items-center {{ bs_class }} mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
-              <div class="d-flex">
-                <div class="toast-body">{{ msg }}</div>
-                <button type="button" class="btn-close {% if 'text-white' in bs_class %}btn-close-white{% endif %} me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-              </div>
+    <!-- Toast / Snackbar container for flashed messages (shared) -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, msg in messages %}
+          {% set bs_class = 'bg-primary text-white' %}
+          {% if category == 'success' %}{% set bs_class = 'bg-success text-white' %}
+          {% elif category == 'danger' %}{% set bs_class = 'bg-danger text-white' %}
+          {% elif category == 'info' %}{% set bs_class = 'bg-info text-dark' %}
+          {% elif category == 'warning' %}{% set bs_class = 'bg-warning text-dark' %}{% endif %}
+          <div class="toast align-items-center {{ bs_class }} mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+            <div class="d-flex">
+              <div class="toast-body">{{ msg }}</div>
+              <button type="button" class="btn-close {% if 'text-white' in bs_class %}btn-close-white{% endif %} me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-          {% endfor %}
-        {% endwith %}
-      </div>
+          </div>
+        {% endfor %}
+      {% endwith %}
+    </div>
 
-      {% block content %}{% endblock %}
+    {# single content block with dynamic container so Jinja doesn't see duplicate blocks #}
+    {% set main_wrapper = 'container-fluid p-0' if is_login_page else 'container py-5' %}
+    <main class="{{ 'p-0' if is_login_page else '' }}">
+      <div class="{{ main_wrapper }}">
+        {% block content %}{% endblock %}
+      </div>
     </main>
 
 

@@ -1,35 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Doctor</title>
-</head>
-<body>
-    <h2>Add New Doctor</h2>
-    <form method="POST">
-        <label>First Name:</label><br>
-        <input type="text" name="f_name" required><br><br>
+{% extends 'base.html' %}
+{% block title %}Add Doctor - HMS{% endblock %}
 
-        <label>Last Name:</label><br>
-        <input type="text" name="l_name" required><br><br>
-
-        <label>Specialization:</label><br>
-        <input type="text" name="specialization"><br><br>
-
-        <label>Contact:</label><br>
-        <input type="text" name="contact"><br><br>
-
-        <label>Department:</label><br>
-        <input type="text" name="department"><br><br>
-
-    <label>Availability:</label><br>
-    <input type="text" name="availability" placeholder="e.g., Mon-Fri 9am-5pm"><br><br>
-
-    <label>Password (for doctor login):</label><br>
-    <input type="password" name="password" required><br><br>
-
-        <button type="submit">Add Doctor</button>
-    </form>
-    <br>
-    <a href="{{ url_for('admin.doctors') }}">Back to Doctors List</a>
-</body>
-</html>
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">Add New Doctor</h3>
+                <form method="POST" class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">First Name</label>
+                        <input type="text" name="f_name" required class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" name="l_name" required class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Specialization</label>
+                        <input type="text" name="specialization" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Contact</label>
+                        <input type="text" name="contact" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Department</label>
+                        <input type="text" name="department" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Availability</label>
+                        <input type="text" name="availability" placeholder="e.g., Mon-Fri 9am-5pm" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Password (for doctor login)</label>
+                        <input type="password" name="password" required class="form-control">
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary">Add Doctor</button>
+                        <a class="btn btn-secondary ms-2" href="{{ url_for('admin.doctors') }}">Back to Doctors List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

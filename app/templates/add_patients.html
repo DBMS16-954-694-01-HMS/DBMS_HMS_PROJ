@@ -1,25 +1,49 @@
-<!DOCTYPE html>
-<html>
-<head><title>Add Patient</title></head>
-<body>
-<h2>Add New Patient</h2>
-<form method="POST">
-  First Name: <input name="first_name" required><br>
-  Last Name: <input name="last_name" required><br>
-  Phone: <input name="phone"><br>
-  Address: <input name="address"><br>
-  Assign Doctor: 
-    {% if doctors and doctors|length > 0 %}
-    <select name="doctor">
-      <option value="">-- None --</option>
-      {% for d in doctors %}
-        <option value="{{ d['doctor_id'] }}">Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
-      {% endfor %}
-    </select><br>
-    {% else %}
-      <p><em>No doctors available. Add a doctor first via Admin → Doctors.</em></p>
-    {% endif %}
-  <button type="submit">Add</button>
-</form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Add Patient - HMS{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">Add New Patient</h3>
+        <form method="POST" class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">First Name</label>
+            <input name="first_name" required class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Last Name</label>
+            <input name="last_name" required class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Phone</label>
+            <input name="phone" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Address</label>
+            <input name="address" class="form-control">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Assign Doctor</label>
+            {% if doctors and doctors|length > 0 %}
+              <select name="doctor" class="form-select">
+                <option value="">-- None --</option>
+                {% for d in doctors %}
+                  <option value="{{ d['doctor_id'] }}">Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
+                {% endfor %}
+              </select>
+            {% else %}
+              <div class="alert alert-warning">No doctors available. Add a doctor first via Admin → Doctors.</div>
+            {% endif %}
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary">Add Patient</button>
+            <a class="btn btn-secondary ms-2" href="{{ url_for('admin.patients') }}">Back</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

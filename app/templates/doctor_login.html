@@ -2,10 +2,10 @@
 {% block title %}Doctor Login - HMS{% endblock %}
 
 {% block content %}
-{% set login_bg = true %}
-<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
-  <div class="col-md-6">
-    <div class="form-card text-center form-card-bg">
+<div class="login-bg">
+  <div class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="col-md-6">
+      <div class="form-card text-center form-card-bg">
       <img src="{{ url_for('static', filename='icons/icon_doc.png') }}" alt="Doctor" class="header-icon mb-3">
       <h2 class="mb-3">Doctor Login</h2>
       <form method="POST">
@@ -19,6 +19,7 @@
         </div>
         <button class="btn btn-primary w-100" type="submit">Login</button>
       </form>
+      </div>
     </div>
   </div>
 </div>

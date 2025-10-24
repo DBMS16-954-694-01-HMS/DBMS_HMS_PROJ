@@ -1,32 +1,38 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<h2>My Confirmed Appointments</h2>
-{% if rows %}
-<table class="table">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Patient</th>
-      <th>Date & Time</th>
-      <th>Notes</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for r in rows %}
-    <tr>
-      <td><a href="{{ url_for('doctor.open_appointment', aid=r['id']) }}">{{ r['id'] }}</a></td>
-      <td>{{ r['patient_name'] }}</td>
-      <td>{{ r['appointment_datetime'] }}</td>
-      <td>{{ r['notes'] or '' }}</td>
-      <td>{{ r['status'] }}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>No confirmed appointments yet.</p>
-{% endif %}
+{% block title %}My Appointments{% endblock %}
 
+{% block content %}
+<div class="row">
+  <div class="col-md-10 offset-md-1">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="mb-0">My Appointments</h3>
+      <a class="btn btn-secondary" href="{{ url_for('doctor.dashboard') }}">Dashboard</a>
+    </div>
+
+    {% if rows %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr><th>ID</th><th>Patient</th><th>Date / Time</th><th>Status</th><th>Notes</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+              <tr>
+                <td><a href="{{ url_for('doctor.open_appointment', aid=r['id']) }}">{{ r['id'] }}</a></td>
+                <td>{{ r['patient_name'] }}</td>
+                <td>{{ r['appointment_datetime'] }}</td>
+                <td>{{ r['notes'] or '' }}</td>
+                <td>{{ r['status'] }}</td>
+                <td><a class="btn btn-sm btn-primary" href="{{ url_for('doctor.open_appointment', aid=r['id']) }}">Open</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="alert alert-info">No appointments.</div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

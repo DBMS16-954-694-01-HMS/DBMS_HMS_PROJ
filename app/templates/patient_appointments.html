@@ -3,42 +3,49 @@
 {% block content %}
 <div class="row">
   <div class="col-md-10 offset-md-1">
-    <h2>My Appointments</h2>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Doctor</th>
-          <th>Date / Time</th>
-          <th>Status</th>
-          <th>Notes</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for a in rows %}
-        <tr>
-          <td>{{ a['id'] }}</td>
-          <td>{{ a['doctor_name'] or '-' }}</td>
-          <td>{{ a['appointment_datetime'] }}</td>
-          <td>
-            {% if a['status'] == 'booked' %}Pending{% else %}{{ a['status']|capitalize }}{% endif %}
-          </td>
-          <td>{{ a['notes'] or '' }}</td>
-          <td>
-            {% if a['status'] in ['booked','confirmed'] %}
-            <form method="POST" action="{{ url_for('patient.cancel_appointment', aid=a['id']) }}" style="display:inline">
-              <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Cancel this appointment?');">Cancel</button>
-            </form>
-            {% else %}
-            -
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <a class="btn btn-secondary" href="{{ url_for('patient.home') }}">Back</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="mb-0">My Appointments</h3>
+      <a class="btn btn-secondary" href="{{ url_for('patient.home') }}">Back</a>
+    </div>
+
+    {% if rows %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Doctor</th>
+              <th>Date / Time</th>
+              <th>Status</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in rows %}
+              <tr>
+                <td>{{ a['id'] }}</td>
+                <td>{{ a['doctor_name'] or '-' }}</td>
+                <td>{{ a['appointment_datetime'] }}</td>
+                <td>{% if a['status'] == 'booked' %}<span class="badge bg-warning text-dark">Pending</span>{% else %}<span class="badge bg-success">{{ a['status']|capitalize }}</span>{% endif %}</td>
+                <td>{{ a['notes'] or '' }}</td>
+                <td>
+                  {% if a['status'] in ['booked','confirmed'] %}
+                    <form method="POST" action="{{ url_for('patient.cancel_appointment', aid=a['id']) }}" style="display:inline">
+                      <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Cancel this appointment?');">Cancel</button>
+                    </form>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="alert alert-info">You have no appointments.</div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

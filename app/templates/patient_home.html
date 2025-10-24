@@ -1,10 +1,53 @@
-<!DOCTYPE html>
-<html>
-<head><title>Patient Home</title></head>
-<body>
-  <h2>Welcome, {{ name }}!</h2>
-  <a href="{{ url_for('patient.book_appointment') }}">Book an Appointment</a> |
-  <a href="{{ url_for('patient.view_appointments') }}">My Appointments</a> |
-  <a href="{{ url_for('patient.logout') }}">Logout</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Patient Home - HMS{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-10 offset-md-1">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h3 class="mb-0">Welcome, {{ name }}!</h3>
+        <div class="text-muted">Patient ID: {{ session.get('patient_id') or '-' }}</div>
+      </div>
+      <div>
+        <a class="btn btn-outline-secondary me-2" href="{{ url_for('patient.logout') }}">Logout</a>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Actions</h5>
+        <p class="card-text">Quick actions for your account.</p>
+        <a class="btn btn-primary me-2" href="{{ url_for('patient.book_appointment') }}">Book Appointment</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('patient.view_appointments') }}">My Appointments</a>
+      </div>
+    </div>
+
+    {% if upcoming and upcoming|length > 0 %}
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Upcoming Appointments</h5>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>ID</th><th>Date / Time</th><th>Doctor</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for a in upcoming %}
+              <tr>
+                <td>{{ a['id'] }}</td>
+                <td>{{ a['appointment_datetime'] or '-' }}</td>
+                <td>{{ a['doctor_name'] or '-' }}</td>
+                <td>{{ a['status'] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% else %}
+      <div class="alert alert-info">You have no upcoming appointments. Use "Book Appointment" to schedule one.</div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

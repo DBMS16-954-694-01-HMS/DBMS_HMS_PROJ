@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 import sqlite3
+import os
 
 doctor_bp = Blueprint('doctor', __name__)
 
-DATABASE = 'hospital_management.db'
+# DB path relative to this module
+DATABASE = os.path.join(os.path.dirname(__file__), 'hospital_management.db')
 
 def get_conn():
     # increase timeout and allow connections from different threads (dev server may use threads)

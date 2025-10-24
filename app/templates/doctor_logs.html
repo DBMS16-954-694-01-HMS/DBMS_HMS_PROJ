@@ -1,31 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Doctor Logs</title>
-</head>
-<body>
-    <h2>Doctor Treatment Logs</h2>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Patient ID</th>
-            <th>Patient Name</th>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
-        {% for log in logs %}
-        <tr>
-            <td>{{ log['id'] }}</td>
-            <td>{{ log['patient_id'] }}</td>
-            <td>{{ log['patient_name'] or '' }}</td>
-            <td>{{ log['start_date'] or log['appointment_datetime'] or '' }}</td>
-            <td>{{ log['description'] or '' }}</td>
-            <td>
-                <a href="{{ url_for('doctor.edit_treatment', tid=log['id']) }}">Edit</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Doctor Treatment Logs - HMS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Treatment Logs</h3>
+            <a class="btn btn-secondary" href="{{ url_for('doctor.dashboard') }}">Dashboard</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                {% if logs %}
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient ID</th>
+                                <th>Patient Name</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <td>{{ log['id'] }}</td>
+                                <td>{{ log['patient_id'] }}</td>
+                                <td>{{ log['patient_name'] or '' }}</td>
+                                <td>{{ log['start_date'] or log['appointment_datetime'] or '' }}</td>
+                                <td>{{ log['description'] or '' }}</td>
+                                <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('doctor.edit_treatment', tid=log['id']) }}">Edit</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <div class="alert alert-info">No treatment logs found.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

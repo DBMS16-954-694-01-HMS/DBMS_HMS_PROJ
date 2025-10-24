@@ -1,21 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head><title>Bills</title></head>
-<body>
-<h2>Bills Overview</h2>
-<a href="{{ url_for('admin.dashboard') }}">⬅ Back</a>
-<hr>
-<table border="1">
-<tr><th>ID</th><th>Patient</th><th>Amount</th><th>Paid</th><th>Date</th></tr>
-{% for b in bills %}
-<tr>
-  <td>{{ b.id }}</td>
-  <td>{{ b.patient_name }}</td>
-  <td>${{ b.total_amount }}</td>
-  <td>{{ 'Yes' if b.paid else 'No' }}</td>
-  <td>{{ b.created_at }}</td>
-</tr>
-{% endfor %}
-</table>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Bills - HMS{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-10 offset-md-1">
+    <h3>Bills Overview</h3>
+    <a class="btn btn-secondary mb-3" href="{{ url_for('admin.dashboard') }}">⬅ Back</a>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Patient</th>
+            <th>Amount</th>
+            <th>Paid</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bills %}
+          <tr>
+            <td>{{ b.id }}</td>
+            <td>{{ b.patient_name }}</td>
+            <td>${{ b.total_amount }}</td>
+            <td>{{ 'Yes' if b.paid else 'No' }}</td>
+            <td>{{ b.created_at }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,34 +1,42 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<h2>Today's Schedule</h2>
-{% if rows %}
-<table class="table">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Patient</th>
-      <th>Date / Time</th>
-      <th>Status</th>
-      <th>Notes</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for r in rows %}
-    <tr>
-      <td><a href="{{ url_for('doctor.open_appointment', aid=r['id']) }}">{{ r['id'] }}</a></td>
-      <td>{{ r['patient_name'] }}</td>
-      <td>{{ r['appointment_datetime'] }}</td>
-      <td>{{ r['status'] }}</td>
-      <td>{{ r['notes'] or '' }}</td>
-      <td><a class="btn btn-sm btn-primary" href="{{ url_for('doctor.open_appointment', aid=r['id']) }}">Open</a></td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>No appointments scheduled for today.</p>
-{% endif %}
+{% block title %}Doctor Dashboard{% endblock %}
 
+{% block content %}
+<div class="row">
+  <div class="col-md-10 offset-md-1">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="mb-0">Doctor Dashboard</h3>
+      <span class="text-muted">Dr. {{ session.get('doctor_name') }}</span>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Today's Appointments</h5>
+        {% if rows %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr><th>#</th><th>Patient</th><th>Time</th><th>Status</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                {% for r in rows %}
+                  <tr>
+                    <td>{{ r['id'] }}</td>
+                    <td>{{ r['first_name'] }} {{ r['last_name'] }}</td>
+                    <td>{{ r['appointment_datetime'] }}</td>
+                    <td>{{ r['status'] }}</td>
+                    <td><a class="btn btn-sm btn-primary" href="{{ url_for('doctor.open_appointment', aid=r['id']) }}">Open</a></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info mb-0">No appointments for today.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

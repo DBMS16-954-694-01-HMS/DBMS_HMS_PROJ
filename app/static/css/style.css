@@ -3,6 +3,7 @@
   background: url('../icons/bg_login.avif') no-repeat center center fixed;
   background-size: cover;
   position: relative;
+  min-height: 100vh;
 }
 .login-bg::before {
   content: "";
@@ -12,11 +13,26 @@
   z-index: 0;
   pointer-events: none;
 }
-.form-card { position: relative; z-index: 1; }
+.form-card { position: relative; z-index: 1; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+
+/* Login-specific form sizing (overrides for cards inside the login background) */
+.login-bg .form-card {
+  max-width: 640px;
+  width: 92%;
+  margin: 0 auto;
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+@media (min-width: 992px) {
+  .login-bg .form-card { width: 580px; }
+}
+/* translucent variants for login cards */
+.form-card-transparent { background: rgba(255,255,255,0.92); }
+.form-card-bg { background: rgba(255,255,255,0.96); }
 /* Basic styling for HMS project */
 body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
 .container { max-width: 980px; }
-.form-card { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
 .header-icon { width: 64px; height: 64px; object-fit: contain; }
 .table thead th { background: #f8f9fa; }
 .footer { margin-top: 3rem; }
@@ -28,4 +44,20 @@ body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvet
 
 @media (max-width: 576px) {
   .container { padding-left: 1rem; padding-right: 1rem; }
+}
+
+/* Doctor card photo sizing: square and slightly larger */
+.doctor-photo {
+  width: 140px;
+  height: 140px;
+  max-width: 100%;
+  object-fit: cover;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 8px; /* slightly rounded square */
+}
+
+@media (max-width: 576px) {
+  .doctor-photo { width: 120px; height: 120px; }
 }

@@ -1,52 +1,106 @@
-<!DOCTYPE html>
-<html>
-<head><title>Patient</title></head>
-<body>
-<h2>Patient: {{ patient['first_name'] }} {{ patient['last_name'] }} (ID: {{ patient['id'] }})</h2>
-<a href="{{ url_for('doctor.my_patients') }}">⬅ Back to My Patients</a>
-<hr>
-<h3>Add Symptom / Treatment Note</h3>
-<form method="POST">
-  <input type="hidden" name="action" value="add_symptom">
-  <textarea name="description" rows="4" cols="60"></textarea><br>
-  <button type="submit">Add</button>
-</form>
+{% extends 'base.html' %}
+{% block title %}Patient: {{ patient['first_name'] }} {{ patient['last_name'] }} - HMS{% endblock %}
 
-<h3>Existing Treatments</h3>
-<table border="1">
-<tr><th>ID</th><th>Description</th><th>Date</th><th>Actions</th></tr>
-{% for t in treatments %}
-<tr>
-  <td>{{ t['id'] }}</td>
-  <td>{{ t['description'] }}</td>
-  <td>{{ t['start_date'] or t['end_date'] or '' }}</td>
-  <td><a href="{{ url_for('doctor.edit_treatment', tid=t['id']) }}">Edit</a></td>
-</tr>
-{% endfor %}
-</table>
+{% block content %}
+<div class="row">
+  <div class="col-md-10 offset-md-1">
+    <a class="btn btn-outline-secondary mb-3" href="{{ url_for('doctor.my_patients') }}">⬅ Back to My Patients</a>
 
-<h3>Create Prescription</h3>
-<form method="POST">
-  <input type="hidden" name="action" value="prescribe">
-  Medication name: <input name="medication_name" required><br>
-  Dosage: <input name="dosage"><br>
-  Quantity: <input name="quantity" value="1"><br>
-  Unit price: <input name="unit_price" value="0"><br>
-  Notes: <input name="notes"><br>
-  <button type="submit">Prescribe</button>
-</form>
+    <div class="card mb-4">
+      <div class="card-body">
+        <h4 class="card-title">Patient: {{ patient['first_name'] }} {{ patient['last_name'] }} <small class="text-muted">(ID: {{ patient['id'] }})</small></h4>
 
-<h3>Existing Prescriptions</h3>
-<table border="1">
-<tr><th>ID</th><th>Created At</th><th>Notes</th></tr>
-{% for p in prescriptions %}
-<tr>
-  <td>{{ p['id'] }}</td>
-  <td>{{ p['created_at'] }}</td>
-  <td>{{ p['notes'] }}</td>
-</tr>
-{% endfor %}
-</table>
+        <h5 class="mt-3">Add Symptom / Treatment Note</h5>
+        <form method="POST" class="mb-3">
+          <input type="hidden" name="action" value="add_symptom">
+          <div class="mb-3">
+            <textarea name="description" rows="4" class="form-control" placeholder="Describe symptom or treatment"></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">Add</button>
+        </form>
 
-</body>
-</html>
+        <h5 class="mt-4">Existing Treatments</h5>
+        {% if treatments %}
+        <div class="table-responsive">
+          <table class="table table-striped align-middle">
+            <thead class="table-light"><tr><th>ID</th><th>Description</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody>
+              {% for t in treatments %}
+              <tr>
+                <td>{{ t['id'] }}</td>
+                <td>{{ t['description'] }}</td>
+                <td>{{ t['start_date'] or t['end_date'] or '' }}</td>
+                <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('doctor.edit_treatment', tid=t['id']) }}">Edit</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+          <div class="alert alert-info">No treatments recorded.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5>Create Prescription</h5>
+        <form method="POST">
+          <input type="hidden" name="action" value="prescribe">
+          <div class="row g-2">
+            <div class="col-md-6">
+              <label for="medication_name" class="form-label">Medication name</label>
+              <input id="medication_name" name="medication_name" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+              <label for="dosage" class="form-label">Dosage</label>
+              <input id="dosage" name="dosage" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label for="quantity" class="form-label">Quantity</label>
+              <input id="quantity" name="quantity" class="form-control" value="1">
+            </div>
+          </div>
+          <div class="row g-2 mt-2">
+            <div class="col-md-3">
+              <label for="unit_price" class="form-label">Unit price</label>
+              <input id="unit_price" name="unit_price" class="form-control" value="0">
+            </div>
+            <div class="col-md-9">
+              <label for="notes" class="form-label">Notes</label>
+              <input id="notes" name="notes" class="form-control">
+            </div>
+          </div>
+          <div class="mt-3">
+            <button class="btn btn-primary" type="submit">Prescribe</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5>Existing Prescriptions</h5>
+        {% if prescriptions %}
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead><tr><th>ID</th><th>Created At</th><th>Notes</th></tr></thead>
+            <tbody>
+              {% for p in prescriptions %}
+              <tr>
+                <td>{{ p['id'] }}</td>
+                <td>{{ p['created_at'] }}</td>
+                <td>{{ p['notes'] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+          <div class="alert alert-info">No prescriptions found.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="login-bg">
-    <div class="d-flex align-items-center justify-content-center min-vh-80">
+    <div class="d-flex align-items-center justify-content-center min-vh-100">
     <div class="col-md-6">
         <div class="form-card form-card-transparent text-center">
             <img src="{{ url_for('static', filename='icons/icon_admin.png') }}" alt="Admin" class="header-icon mb-3">
@@ -20,6 +20,7 @@
                 <button class="btn btn-primary w-100" type="submit">Login</button>
             </form>
         </div>
+    </div>
     </div>
 </div>
 {% endblock %}

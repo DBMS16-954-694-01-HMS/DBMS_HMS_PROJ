@@ -1,36 +1,44 @@
 {% extends 'base.html' %}
 
+{% block title %}Appointment #{{ appointment['id'] }}{% endblock %}
+
 {% block content %}
 <div class="row">
   <div class="col-md-8 offset-md-2">
-    <h2>Appointment #{{ appointment['id'] }} — {{ appointment['patient_name'] }}</h2>
-    <p><strong>Date/Time:</strong> {{ appointment['appointment_datetime'] or '-' }}</p>
-    <p><strong>Status:</strong> {{ appointment['status'] }}</p>
-    <p><strong>Notes:</strong> {{ appointment['notes'] or '' }}</p>
+    <div class="card mb-4">
+      <div class="card-body">
+        <h4 class="card-title">Appointment #{{ appointment['id'] }} — {{ appointment['patient_name'] }}</h4>
+        <p class="mb-1"><strong>Date/Time:</strong> {{ appointment['appointment_datetime'] or '-' }}</p>
+        <p class="mb-1"><strong>Status:</strong> {{ appointment['status'] }}</p>
+        <p class="mb-3"><strong>Notes:</strong> {{ appointment['notes'] or '' }}</p>
 
-    <h4>Add Treatment Note</h4>
-    <form method="post">
-      <div class="mb-3">
-        <label class="form-label">Details</label>
-        <textarea name="details" class="form-control" rows="4"></textarea>
+        <h5 class="mt-3">Treatments / Notes</h5>
+        {% if treatments %}
+          <ul class="list-group mb-3">
+            {% for t in treatments %}
+              <li class="list-group-item">
+                <div><strong>{{ t['start_date'] }}</strong></div>
+                <div>{{ t['description'] or '' }}</div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="alert alert-info mb-3">No treatment notes yet.</div>
+        {% endif %}
+
+        <h5>Add Treatment Note</h5>
+        <form method="post" class="mb-0">
+          <div class="mb-3">
+            <label for="details" class="form-label">Details</label>
+            <textarea id="details" name="details" class="form-control" rows="4" placeholder="Describe the treatment or notes"></textarea>
+          </div>
+          <div>
+            <button class="btn btn-primary" type="submit">Add Note</button>
+            <a class="btn btn-secondary ms-2" href="{{ url_for('doctor.view_appointments_doctor') }}">Back</a>
+          </div>
+        </form>
       </div>
-      <button class="btn btn-primary" type="submit">Add Note</button>
-      <a class="btn btn-secondary ms-2" href="{{ url_for('doctor.view_appointments_doctor') }}">Back</a>
-    </form>
-
-    <hr>
-    <h4>Previous Treatment Notes</h4>
-    {% if treatments %}
-      <ul class="list-group">
-        {% for t in treatments %}
-          <li class="list-group-item">
-            <strong>{{ t['start_date'] }}</strong>: {{ t['description'] or '' }}
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No treatment notes yet.</p>
-    {% endif %}
+    </div>
   </div>
 </div>
 

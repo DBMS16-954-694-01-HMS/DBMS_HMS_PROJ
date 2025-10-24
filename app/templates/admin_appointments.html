@@ -32,7 +32,7 @@
             <select name="doctor" class="form-control" required>
               <option value="">-- select doctor --</option>
               {% for d in doctors %}
-                <option value="{{ d['doctor_id'] }}" {% if d['doctor_id'] == r['doctor_id'] %}selected{% endif %}>Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
+                <option value="{{ d['doctor_id'] }}" {% if d['doctor_id']|string == r['doctor_id']|string %}selected{% endif %}>Dr. {{ d['f_name'] }} {{ d['l_name'] }}</option>
               {% endfor %}
             </select>
           </div>
